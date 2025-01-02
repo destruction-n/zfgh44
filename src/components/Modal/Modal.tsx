@@ -1,21 +1,18 @@
+
 import './Modal.css'
+import { Coordinate } from '../MapComponent/MapComponent'
 
 interface ModalProps {
-	isOpen: boolean
+	isOpen: Boolean
 	onClose: () => void
-	x1: number | string
-	x2: number | string
-	y1: number | string
-	y2: number | string
+	coordinates: Coordinate[] | null
 }
 
 export const Modal: React.FC<ModalProps> = ({
 	isOpen,
 	onClose,
-	x1,
-	x2,
-	y1,
-	y2,
+	coordinates,
+
 }) => {
 	if (!isOpen) return null
 	return (
@@ -25,7 +22,11 @@ export const Modal: React.FC<ModalProps> = ({
 					&times;
 				</span>
 				<div>
-					{x1} {x2} {y1} {y2}
+					{coordinates?.map((e, index) => (
+						<div key={index}>
+							Координата {index + 1}: X: {e.lat.toFixed(4)}, Y: {e.lng.toFixed(4)}
+						</div>
+					))}
 				</div>
 			</div>
 		</div>

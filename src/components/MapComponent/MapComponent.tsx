@@ -1,36 +1,39 @@
 import React, { useEffect, useState } from 'react'
-import { MapContainer, Rectangle, TileLayer} from 'react-leaflet'
+import { FeatureGroup, MapContainer, TileLayer } from 'react-leaflet'
 import { LatLngTuple } from 'leaflet'
-import { AreaSelector } from '../AreaSelector'
-import { Modal } from '../Modal'
+import { EditControl } from "react-leaflet-draw";
+import "leaflet/dist/leaflet.css";
+import "leaflet-draw/dist/leaflet.draw.css";
+import { Modal } from '../Modal';
+
 
 const position: LatLngTuple = [53.9294, 27.5707]
-
-interface MapComponentProps {
-	rectangleBounds: LatLngTuple[] | null
-	setRectangleBounds: (bounds: LatLngTuple[]) => void
+export interface Coordinate {
+	lat: number;
+	lng: number;
 }
 
-export const MapComponent: React.FC<MapComponentProps> = ({
-	rectangleBounds,
-	setRectangleBounds,
-}) => {
-		const [isModalOpen, setIsModalOpen] = useState(false);
-		console.log('123')
-		useEffect(() => {
-			if (rectangleBounds) {
-				setIsModalOpen(true);
-			}
-		}, [rectangleBounds]);
+export const MapComponent = ({
 
-		const openModal = () => {
-			setIsModalOpen(true);
-		};
-		
-		const closeModal = () => {
-			setIsModalOpen(false);
-		};
-	  	return (
+}) => {
+	const [coordinates, setCoordinates] = useState<Coordinate[]>([]);
+	const [isModalOpen, setIsModalOpen] = useState<Boolean>(true);
+	useEffect(() => {
+		setIsModalOpen(!isModalOpen)
+	}, [coordinates]);
+
+	const closeModal = () => {
+		setIsModalOpen(false);
+	};
+
+	function onCreated(e: any) {
+		if (e.layer.getLatLngs()[0][0]) {
+			setCoordinates(e.layer.getLatLngs()[0]);
+
+		}
+	}
+	console.log(coordinates)
+	return (
 		<MapContainer
 			center={position}
 			zoom={13}
@@ -41,24 +44,26 @@ export const MapComponent: React.FC<MapComponentProps> = ({
 				attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 				url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 			/>
-			{rectangleBounds  && (
-				<>
-					<Rectangle
-						bounds={rectangleBounds as LatLngTuple[]}
-						pathOptions={{ color: 'blue', weight: 3 }}
-					/>
-					<Modal isOpen={isModalOpen}
-						onClose={closeModal} 
-						x1 ={rectangleBounds[0][0].toFixed(4)}
-						x2 ={rectangleBounds[1][0].toFixed(4)}
-						y1 ={rectangleBounds[0][1].toFixed(4)}
-						y2 ={rectangleBounds[1][1].toFixed(4)}
-					 />
 
-					
-				</>
-			)}
-			<AreaSelector setRectangleBounds={setRectangleBounds} />
+			<Modal isOpen={isModalOpen}
+				onClose={closeModal}
+				coordinates={coordinates}
+			/>
+			<FeatureGroup>
+				<EditControl
+					position={"topright"}
+					onCreated={onCreated}
+					draw={{
+						rectangle: true,
+						circle: false,
+						circlemarker: false,
+						marker: false,
+
+						polyline: true,
+					}}
+				/>
+
+			</FeatureGroup>
 		</MapContainer>
 	)
 }
