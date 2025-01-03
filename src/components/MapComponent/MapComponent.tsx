@@ -1,41 +1,33 @@
-import React, { useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { FeatureGroup, MapContainer, TileLayer } from 'react-leaflet'
-import { LatLngTuple } from 'leaflet'
 import { EditControl } from "react-leaflet-draw";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import { Modal } from '../Modal';
+import { Coordinate } from '../../types/coordinate.interface';
+import { constants } from '../../common/constants';
 
 
-const position: LatLngTuple = [53.9294, 27.5707]
-export interface Coordinate {
-	lat: number;
-	lng: number;
-}
 
-export const MapComponent = ({
-
-}) => {
+export const MapComponent = () => {
 	const [coordinates, setCoordinates] = useState<Coordinate[]>([]);
-	const [isModalOpen, setIsModalOpen] = useState<Boolean>(true);
-	useEffect(() => {
-		setIsModalOpen(!isModalOpen)
-	}, [coordinates]);
+	const [isModalOpen, setIsModalOpen] = useState<Boolean>(false);
+
 
 	const closeModal = () => {
 		setIsModalOpen(false);
 	};
 
-	function onCreated(e: any) {
+	const onCreated = useCallback((e: any) => {
 		if (e.layer.getLatLngs()[0][0]) {
 			setCoordinates(e.layer.getLatLngs()[0]);
-
+			setIsModalOpen(true);
 		}
-	}
-	console.log(coordinates)
+	}, []);
+
 	return (
 		<MapContainer
-			center={position}
+			center={constants.POSITION}
 			zoom={13}
 			scrollWheelZoom={false}
 			style={{ height: '100vh', width: '100%' }}
@@ -58,8 +50,7 @@ export const MapComponent = ({
 						circle: false,
 						circlemarker: false,
 						marker: false,
-
-						polyline: true,
+						polyline: false,
 					}}
 				/>
 

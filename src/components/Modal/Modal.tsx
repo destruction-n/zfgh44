@@ -1,6 +1,6 @@
 
+import { Coordinate } from '../../types/coordinate.interface'
 import './Modal.css'
-import { Coordinate } from '../MapComponent/MapComponent'
 
 interface ModalProps {
 	isOpen: Boolean
@@ -24,7 +24,7 @@ export const Modal: React.FC<ModalProps> = ({
 				<div>
 					{coordinates?.map((e, index) => (
 						<div key={index}>
-							Координата {index + 1}: X: {e.lat.toFixed(4)}, Y: {e.lng.toFixed(4)}
+							Coordinate {index + 1}: X: {e.lat.toFixed(4)}, Y: {e.lng.toFixed(4)}
 						</div>
 					))}
 				</div>
